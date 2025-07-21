@@ -1,6 +1,4 @@
 const mongoose = require('mongoose');
-const { use } = require('react');
-const { string, lowercase, minLength, maxLength } = require('zod');
 require('dotenv').config();
 const DB_LINK = process.env.dbLink
 console.log(DB_LINK)
