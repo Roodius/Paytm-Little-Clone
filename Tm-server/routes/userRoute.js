@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router();
-const {User} = require('../Database/db');
+const {User, Account} = require('../Database/db');
 require('dotenv').config();
 const secret = process.env.jwt_secret 
 const jwt = require('jsonwebtoken')
@@ -43,20 +43,29 @@ router.post('/signup',async (req,res) => {
         firstName,
         lastName
     })  
-        const token = jwt.sign({username}, secret)
+
+    // on sign giving a random balance
+    const userId = newuser._id;
+
+    await Account.create({
+        userId,
+        balance:1 + Math.random() * 10000
+    })
+        // genrating a token giving back to him for sign in 
+    const token = jwt.sign({username}, secret)
         return res.status(200).json({
             "message":"User created Succesfully",
-            "token": token
-        })
+            "token": token,
+    })
 })
-
+        // sign uping  
 router.post('/signUp',middleware,async (req,res) => {
     const username = req.headers.username;
 
     const Exist = await User.findOne({
         username
     })
-    if(!username){
+    if(!Exist){
         res.status(404).json({msg:"User Not found"})
     }  else {
         res.status(200).json({Done:"Sign in Successfull"})
