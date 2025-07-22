@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken")
 require("dotenv").config();
-const secret = process.env.jwt_secret;
+ const secret = process.env.jwt_secret;
 
 
 function usermiddleware(req,res,next){
