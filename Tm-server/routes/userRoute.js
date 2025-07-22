@@ -8,6 +8,8 @@ const z = require("zod")
 const middleware = require("../middlewares/user");
 const usermiddleware = require('../middlewares/user');
 const regex = require('regex')
+
+// input schema
 const InputSchema = z.object({
     username:z.string().max(10),
     password:z.string().max(10),
