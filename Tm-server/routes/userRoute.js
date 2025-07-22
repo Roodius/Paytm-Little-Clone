@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router();
-const UserDb = require('../Database/db')
+const {User} = require('../Database/db');
 require('dotenv').config();
 const secret = process.env.jwt_secret 
 const jwt = require('jsonwebtoken')
@@ -8,38 +8,40 @@ const z = require("zod")
 const middleware = require("../middlewares/user");
 const usermiddleware = require('../middlewares/user');
 const regex = require('regex');
-const { id } = require('zod/v4/locales');
 
 // input schema
 const InputSchema = z.object({
-    username:z.string().max(10),
-    password:z.string().max(10),
+    username:z.string(),
+    password:z.string(),
     firstName:z.string(),
     lastName:z.string()
 })
+// console.log('User:', typeof User, Object.keys(User));
 
 // sing up new user
 router.post('/signup',async (req,res) => {
     const username = req.body.username;
-    const password = req.body.username;
-    const {success} = InputSchema.parse({username, password})
+    const password = req.body.password;
+    const firstName = req.body.firstName;
+    const lastName = req.body.lastName;
+    const {success} = InputSchema.safeParse({username, password,firstName,lastName})
     if (!success) {
-        return res.status(201).json({"msg":"set valid Usename and password"})
+        return res.status(201).json({msg:"set valid Usename and password"})
         
     } 
 
-    const user = UserDb.findOne({
-        username:username
-    })
+    const user = await User.findOne({username})
 
-    if(user._id){
+    if(user){
         return res.status(200).json({msg:"Your Already Exists !"})
     }
     // const hashedPass = 
 
-    const newuser = await UserDb.create({
+    const newuser = await User.create({
         username,
-        password
+        password,
+        firstName,
+        lastName
     })  
         const token = jwt.sign({username}, secret)
         return res.status(200).json({
@@ -51,7 +53,7 @@ router.post('/signup',async (req,res) => {
 router.post('/signUp',middleware,async (req,res) => {
     const username = req.headers.username;
 
-    const Exist = await UserDb.findOne({
+    const Exist = await User.findOne({
         username
     })
     if(!username){
@@ -73,7 +75,7 @@ router.put('/updateInfo',middleware, async (req,res) => {
         res.status(404).json({message:"Error While Updating information"})
     } 
 
-    await UserDb.updateOne({_id:req.userID},{
+    await User.updateOne({_id:req.userID},{
         $set:{
             password:password,
         firstName:firstName,
@@ -90,7 +92,7 @@ router.put('/updateInfo',middleware, async (req,res) => {
 router.get('/bulk',middleware, async (req,res) => {
     const filter = req.query.filter || "";
 
-    const  users = UserDb.find({
+    const  users = User.find({
         $or:[
             {
                 firstName:{

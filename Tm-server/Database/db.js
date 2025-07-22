@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { useId } = require('react');
 const { object, string } = require('zod');
 require('dotenv').config();
 const DB_LINK = process.env.dbLink
@@ -15,11 +14,11 @@ const connectToMongo = async () => {
         console.log("Error in Connecting To Mongo" ,error.message);
     }
 }; 
-
+connectToMongo()
 
  // user Schema For sign in and Sing up
 const userSchema = new Schema({
-    usename:{
+    username:{
         type:String,
         required:true,
         unique:true,
@@ -65,5 +64,5 @@ const User = mongoose.model('User', userSchema);
 
 module.exports = { 
     User,
-    Account   
+    Account,   
 };
