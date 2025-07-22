@@ -7,7 +7,8 @@ const jwt = require('jsonwebtoken')
 const z = require("zod")
 const middleware = require("../middlewares/user");
 const usermiddleware = require('../middlewares/user');
-const regex = require('regex')
+const regex = require('regex');
+const { id } = require('zod/v4/locales');
 
 // input schema
 const InputSchema = z.object({
@@ -72,11 +73,13 @@ router.put('/updateInfo',middleware, async (req,res) => {
         res.status(404).json({message:"Error While Updating information"})
     } 
 
-    await UserDb.updateOne({
-        password:password,
+    await UserDb.updateOne({_id:req.userID},{
+        $set:{
+            password:password,
         firstName:firstName,
         lastName:lastName
-    })  
+        }
+    }, )  
 
     res.status(200).json({
         msg:"updated Succesfully"
@@ -84,7 +87,7 @@ router.put('/updateInfo',middleware, async (req,res) => {
 })
 
 // get user  info for pay using name instence
-router.get('/getUserInfo',middleware, async (req,res) => {
+router.get('/bulk',middleware, async (req,res) => {
     const filter = req.query.filter || "";
 
     const  users = UserDb.find({

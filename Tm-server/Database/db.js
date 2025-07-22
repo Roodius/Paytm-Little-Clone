@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const { useId } = require('react');
+const { object, string } = require('zod');
 require('dotenv').config();
 const DB_LINK = process.env.dbLink
 console.log(DB_LINK)
@@ -42,8 +44,26 @@ const userSchema = new Schema({
     }
 })
 
+// account Schema
+const AccountSchema = new Schema({
+    useId:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'User',
+        required:true,
+    },
+    balance:{
+        type:Number,
+        required:true
+    }
+})
+
+
+const Account  = mongoose.model('Account',AccountSchema )
 const User = mongoose.model('User', userSchema);
 
+
+
 module.exports = { 
-    User   
+    User,
+    Account   
 };

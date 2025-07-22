@@ -10,11 +10,11 @@ function usermiddleware(req,res,next){
         res.status(201).json({"Error" :"Plaese Enter Your Token"})
     }
 
-    const Token = Authen.split(" ")[1];
+    const Token = Authen.split(' ')[1];
 
     try{
-        const decoded = jwt.verify({Token},secret);
-        req.user = decoded;
+        const decodedToken = jwt.verify({Token},secret);
+        req.userID = decodedToken.id;
         next();
     } catch(Error) {
         console.log(Error);
