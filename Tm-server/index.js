@@ -3,13 +3,16 @@ require('dotenv').config();
 const PORT = process.env.port;
 const app = express();
 const userRoutes = require("./routes/userRoute")
+const Accountrouter = require('./routes/transecRoute');
 const bosyParser = require("body-parser")
 const cors = require("cors")
-const Accountrouter = require('./routes/transecRoute')
+
+
 app.use(cors());
-app.use(bosyParser.json()
-);
-app.use('/user', userRoutes);   //userRouter
+app.use(bosyParser.json());
+
+
+app.use('/user', userRoutes);
 app.use('/account', Accountrouter) // Acount Router
 
 
