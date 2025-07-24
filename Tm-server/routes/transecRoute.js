@@ -1,12 +1,12 @@
 const express = require('express');
 const { Account } = require('../Database/db');
-const Accountrouter = express.Router();
+const router = express.Router();
 const middleware = require('../middlewares/user');
 const { default: mongoose } = require('mongoose');
 
 
 // getting a balance 
-Accountrouter.get('/balance' , middleware, async (req,res) => {
+router.get('/balance' , middleware, async (req,res) => {
         const account  =  await Account.findOne({
             useId:req.userId
         })
@@ -17,7 +17,7 @@ Accountrouter.get('/balance' , middleware, async (req,res) => {
 
 
 // transfer money To another  account wali problem 
-Accountrouter.post('/transfer',middleware,async (req,res) => {
+router.post('/transfer',middleware,async (req,res) => {
     const session = await mongoose.startSession();
 
     session.startTransaction();
@@ -53,8 +53,7 @@ Accountrouter.post('/transfer',middleware,async (req,res) => {
     });
 })
  
-exports.module = {
-    Accountrouter
-}
+module.exports =  router
+
 
 

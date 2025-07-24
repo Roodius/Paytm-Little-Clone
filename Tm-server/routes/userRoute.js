@@ -5,7 +5,6 @@ require('dotenv').config();
 const secret = process.env.jwt_secret 
 const jwt = require('jsonwebtoken')
 const z = require("zod")
-const middleware = require("../middlewares/user");
 const usermiddleware = require('../middlewares/user');
 const regex = require('regex');
 
@@ -24,6 +23,8 @@ router.post('/signup',async (req,res) => {
     const password = req.body.password;
     const firstName = req.body.firstName;
     const lastName = req.body.lastName;
+
+    // parsing the input using zod
     const {success} = InputSchema.safeParse({username, password,firstName,lastName})
     if (!success) {
         return res.status(201).json({msg:"set valid Usename and password"})
@@ -42,25 +43,25 @@ router.post('/signup',async (req,res) => {
         password,
         firstName,
         lastName
-    })  
-
-    // on sign giving a random balance
-    const userId = newuser._id;
-
-    await Account.create({
-        userId,
-        balance:1 + Math.random() * 10000
     })
+    const userId = newuser._id;  
         // genrating a token giving back to him for sign in 
     const token = jwt.sign({username}, secret)
-        return res.status(200).json({
-            "message":"User created Succesfully",
-            "token": token,
+    // on sign giving a random balance
+    
+    await Account.create({
+        userId,
+        balance: 1 + Math.random() * 10000
     })
+    return res.status(200).json({
+        "message":"User created Succesfully",
+        "token": token,
+    })
+    
 })
         // sign uping  
-router.post('/signUp',middleware,async (req,res) => {
-    const username = req.headers.username;
+router.post('/signin',usermiddleware,async (req,res) => {
+    const Token = req.headers.Token;
 
     const Exist = await User.findOne({
         username
@@ -73,7 +74,7 @@ router.post('/signUp',middleware,async (req,res) => {
 })
 
 // put route for update info 
-router.put('/updateInfo',middleware, async (req,res) => {
+router.put('/updateInfo',usermiddleware, async (req,res) => {
     const password = req.headers.password;
     const firstName = req.headers.firstName;
     const lastName = req.headers.lastName;
@@ -98,7 +99,7 @@ router.put('/updateInfo',middleware, async (req,res) => {
 })
 
 // get user  info for pay using name instence
-router.get('/bulk',middleware, async (req,res) => {
+router.get('/bulk',usermiddleware, async (req,res) => {
     const filter = req.query.filter || "";
 
     const  users = User.find({

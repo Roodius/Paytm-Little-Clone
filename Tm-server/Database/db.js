@@ -8,7 +8,7 @@ const {Schema} = mongoose;
 
 const connectToMongo = async () => {
     try{
-    await mongoose.connect("mongodb+srv://osmansaifi30:VI5Xirc5TtXJTEl4@cluster0.tze6j.mongodb.net/paytm-transaction");
+    await mongoose.connect(DB_LINK);
     console.log("connected To DB")
     }catch(error){
         console.log("Error in Connecting To Mongo" ,error.message);
@@ -45,7 +45,7 @@ const userSchema = new Schema({
 
 // account Schema
 const AccountSchema = new Schema({
-    useId:{
+    userId:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'User',
         required:true,
