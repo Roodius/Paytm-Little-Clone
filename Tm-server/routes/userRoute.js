@@ -2,16 +2,17 @@ const express = require('express')
 const router = express.Router();
 const {User, Account} = require('../Database/db');
 require('dotenv').config();
-const secret = process.env.jwt_secret 
+const secret = process.env.JWT_SECRET 
 const jwt = require('jsonwebtoken')
 const z = require("zod")
 const usermiddleware = require('../middlewares/user');
-const regex = require('regex');
+const bcrypt = require("bcryptjs")
+
 
 // input schema
 const InputSchema = z.object({
-    username:z.string(),
-    password:z.string(),
+    username:z.string().min(5),
+    password:z.string().min(6),
     firstName:z.string(),
     lastName:z.string()
 })
@@ -27,41 +28,48 @@ router.post('/signup',async (req,res) => {
     // parsing the input using zod
     const {success} = InputSchema.safeParse({username, password,firstName,lastName})
     if (!success) {
-        return res.status(201).json({msg:"set valid Usename and password"})
+        console.log("zod validation error",success.error);
+        return res.status(400).json({msg:"set valid Usename and password"})
         
     } 
 
-    const user = await User.findOne({username})
+    try{
+        const user = await User.findOne({username})
 
     if(user){
-        return res.status(200).json({msg:"Your Already Exists !"})
+        return res.status(409).json({msg:"Your Already Exists !"})
     }
-    // const hashedPass = 
+        console.log("Before bcrypt");
+        const hashedpassword = await bcrypt.hash(password, 10);
 
     const newuser = await User.create({
         username,
-        password,
+        password:hashedpassword,
         firstName,
         lastName
     })
     const userId = newuser._id;  
         // genrating a token giving back to him for sign in 
-    const token = jwt.sign({username}, secret)
+    const token = jwt.sign({userId}, secret)
     // on sign giving a random balance
     
     await Account.create({
         userId,
-        balance: 1 + Math.random() * 10000
+        balance: 1 + Math.floor(Math.random() * 10000)
     })
     return res.status(200).json({
         "message":"User created Succesfully",
         "token": token,
     })
+    } catch(error){
+        // console.error("Signup error:", error.message);
+        return res.status(500).json({ message: "Internal server error", error: error.message });
+    }
     
 })
         // sign uping  
 router.post('/signin',usermiddleware,async (req,res) => {
-    const Token = req.headers.Token;
+    const username = req.headers.username;
 
     const Exist = await User.findOne({
         username
@@ -73,29 +81,38 @@ router.post('/signin',usermiddleware,async (req,res) => {
     }
 })
 
+const schemaforUpdataion = z.object({
+    password:z.string(),
+    firstName:z.string(),
+    lastName:z.string(),
+})
+
 // put route for update info 
 router.put('/updateInfo',usermiddleware, async (req,res) => {
     const password = req.headers.password;
-    const firstName = req.headers.firstName;
-    const lastName = req.headers.lastName;
+    const firstname = req.headers.firstname;
+    const lastname = req.headers.lastname;
     
-    const {success} = InputSchema.safeParse({password, firstName, lastName})
+    const result = schemaforUpdataion.safeParse({password, firstName, lastName})
 
-    if(!success){
-        res.status(404).json({message:"Error While Updating information"})
+    if(!result.success){
+       return res.status(400).json({message:"Error While parsing input"})
     } 
 
-    await User.updateOne({_id:req.userID},{
+    try {
+        await User.updateOne({_id:req.userID},{
         $set:{
             password:password,
-        firstName:firstName,
-        lastName:lastName
+            firstName:firstname,
+            lastName:lastname
         }
-    }, )  
-
-    res.status(200).json({
-        msg:"updated Succesfully"
     })
+    return res.status(200).json({
+        msg:"updated Succesfully"
+    })  
+    } catch(error){
+        return res.status(500).json({ message: "Internal server error", error: err.message });
+    }   
 })
 
 // get user  info for pay using name instence

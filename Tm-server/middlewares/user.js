@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken")
 require("dotenv").config();
- const secret = process.env.jwt_secret;
+ const secret = process.env.JWT_SECRET;
 
 
 function usermiddleware(req,res,next){
@@ -13,11 +13,11 @@ function usermiddleware(req,res,next){
     const Token = Authen.split(' ')[1];
 
     try{
-        const decodedToken = jwt.verify({Token},secret);
-        req.userID = decodedToken.id;
+        const decodedToken = jwt.verify(Token,secret);
+        req._id = decodedToken._id;
         next();
     } catch(Error) {
-        console.log(Error);
+           console.log(Error);
         return res.status(404).json({"Error": "Could not Verify Your Token"})
     }
 }

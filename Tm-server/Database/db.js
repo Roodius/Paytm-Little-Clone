@@ -1,20 +1,19 @@
 const mongoose = require('mongoose');
 const { object, string } = require('zod');
 require('dotenv').config();
-const DB_LINK = process.env.dbLink
-console.log(DB_LINK)
+const dbLink = process.env.DB_LINK
 const {Schema} = mongoose;
 
 
 const connectToMongo = async () => {
     try{
-    await mongoose.connect(DB_LINK);
+    await mongoose.connect(dbLink);
     console.log("connected To DB")
     }catch(error){
         console.log("Error in Connecting To Mongo" ,error.message);
     }
 }; 
-connectToMongo()
+connectToMongo();
 
  // user Schema For sign in and Sing up
 const userSchema = new Schema({
@@ -22,24 +21,18 @@ const userSchema = new Schema({
         type:String,
         required:true,
         unique:true,
-        lowercase:true,
-        minLength:3,
-        maxLength:30
     },
     password:{
         type:String,
         required:true,
-        minLength:6
     },
     firstName:{
         type:String,
         required:true,
-        maxLength:6
     },
     lastName:{
         type:String,
         required:true,
-        maxLength:50
     }
 })
 
@@ -57,8 +50,8 @@ const AccountSchema = new Schema({
 })
 
 
-const Account  = mongoose.model('Account',AccountSchema )
 const User = mongoose.model('User', userSchema);
+const Account  = mongoose.model('Account',AccountSchema )
 
 
 
