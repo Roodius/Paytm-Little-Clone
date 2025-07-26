@@ -18,28 +18,32 @@ const InputSchema = z.object({
 })
 // console.log('User:', typeof User, Object.keys(User));
 
+    console.log("in user Route")
 // sing up new user
 router.post('/signup',async (req,res) => {
+        console.log("waiting for Input");
     const username = req.body.username;
     const password = req.body.password;
     const firstName = req.body.firstName;
     const lastName = req.body.lastName;
 
-    // parsing the input using zod
-    const {success} = InputSchema.safeParse({username, password,firstName,lastName})
-    if (!success) {
-        console.log("zod validation error",success.error);
-        return res.status(400).json({msg:"set valid Usename and password"})
-        
-    } 
+    console.log("Recieved Input");
 
-    try{
+    // parsing the input using zod
+     const result = InputSchema.safeParse({username, password,firstName,lastName})
+    if (!result.success) {
+        console.log("zod validation error",result.success.error);
+        return res.status(400).json({msg:"set valid Usename and password"})
+    } 
+    console.log("before try catch")
+    
         const user = await User.findOne({username})
 
     if(user){
         return res.status(409).json({msg:"Your Already Exists !"})
     }
         console.log("Before bcrypt");
+    try{
         const hashedpassword = await bcrypt.hash(password, 10);
 
     const newuser = await User.create({
@@ -60,9 +64,9 @@ router.post('/signup',async (req,res) => {
     return res.status(200).json({
         "message":"User created Succesfully",
         "token": token,
-    })
-    } catch(error){
-        // console.error("Signup error:", error.message);
+    })    
+    }catch(error){
+        console.log(error.message); 
         return res.status(500).json({ message: "Internal server error", error: error.message });
     }
     
@@ -89,9 +93,9 @@ const schemaforUpdataion = z.object({
 
 // put route for update info 
 router.put('/updateInfo',usermiddleware, async (req,res) => {
-    const password = req.headers.password;
-    const firstname = req.headers.firstname;
-    const lastname = req.headers.lastname;
+    const password = req.body.password;
+    const firstName = req.body.firstName;
+    const lastName = req.body.lastName;
     
     const result = schemaforUpdataion.safeParse({password, firstName, lastName})
 
@@ -100,11 +104,11 @@ router.put('/updateInfo',usermiddleware, async (req,res) => {
     } 
 
     try {
-        await User.updateOne({_id:req.userID},{
+        await User.updateOne({_id:req.userId},{
         $set:{
             password:password,
-            firstName:firstname,
-            lastName:lastname
+            firstName:firstName,
+            lastName:lastName
         }
     })
     return res.status(200).json({
@@ -118,8 +122,9 @@ router.put('/updateInfo',usermiddleware, async (req,res) => {
 // get user  info for pay using name instence
 router.get('/bulk',usermiddleware, async (req,res) => {
     const filter = req.query.filter || "";
-
-    const  users = User.find({
+    try{
+        
+    const  users = await User.find({
         $or:[
             {
                 firstName:{
@@ -133,14 +138,20 @@ router.get('/bulk',usermiddleware, async (req,res) => {
             }
         ]
     })
-    res.status(200).json({
+    return res.status(200).json({
         user:users.map((user) => ({
             username:user.username,
             firstName:user.firstName,
             lastName:user.lastName,
-            _id:user._id
+            _id: user._id 
         }))
     })
+    } catch(error){
+          return res.status(500).json({
+            message: "Internal Server Error",
+            error: err.message
+        });
+    }
 })  
 
 module.exports = router

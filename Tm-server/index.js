@@ -4,7 +4,6 @@ const port = process.env.PORT;
 const app = express();
 const userRoutes = require("./routes/userRoute")
 const Accountrouter = require('./routes/transecRoute');
-const bodyParser = require("body-parser")
 const cors = require("cors")
 
 

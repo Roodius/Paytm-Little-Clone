@@ -6,7 +6,7 @@ require("dotenv").config();
 function usermiddleware(req,res,next){
     const Authen = req.headers.authorization;
 
-    if(!Authen &&  !Authen.startsWith("Bearer ")){
+        if(!Authen &&  !Authen.startsWith("Bearer ")){
         res.status(201).json({"Error" :"Plaese Enter Your Token"})
     }
 
@@ -14,7 +14,7 @@ function usermiddleware(req,res,next){
 
     try{
         const decodedToken = jwt.verify(Token,secret);
-        req._id = decodedToken._id;
+        req.userId = decodedToken.userId;
         next();
     } catch(Error) {
            console.log(Error);
