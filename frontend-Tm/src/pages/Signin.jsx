@@ -8,7 +8,7 @@ import { SubHeading } from "../components/SubHeading";
 export  function Signin(){
 
     return <div className="bg-slate-300 h-screen flex justify-center items-center">
-            <div className="bg-white w-[30%] h-[80%] rounded-lg">
+            <div className="bg-white w-[30%] h-[80%] rounded-lg p-6">
                 <div className="justify-center flex">
                     <Heading label={"Sign In"}/>    
                     </div>
