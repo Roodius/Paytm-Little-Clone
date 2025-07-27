@@ -1,7 +1,14 @@
+import { Appbar } from "../components/Appbar";
+import { Balance } from "../components/Balance";
+import { Users } from "../components/Users";
 
 export  function Dashboard(){
 
-    return <>
-        Dashboard
-    </>
+    return <div>
+        <Appbar/>
+        <div className="m-8">
+            <Balance balance={"8,900"}/>
+            <Users/>
+        </div>
+    </div>
 }
