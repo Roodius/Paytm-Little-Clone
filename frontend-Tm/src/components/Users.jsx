@@ -6,8 +6,15 @@ export function Users(){
     const [users , setUsers] = useState([]);
 
     useEffect(() => {
-        axios.get(`http://localhost:5000/user/bulk`).then(res => {
+        const token = localStorage.getItem("token")
+        axios.get('http://localhost:5000/user/bulk',{
+            headers:{
+                Authorization:`Bearer ${token}`
+            }
+        }).then(res => {
             setUsers(res.data.user)
+        }).catch(err => {
+            console.log("Error", err);
         })
     },[])
 
@@ -15,11 +22,14 @@ export function Users(){
         <div>
             <input className="shadow  flex justify-between focus:outline-0 m-10 placeholder:font-medium" type="text" placeholder="search users ..."/>
         </div>
-        <div>
-            {users.map((user) => (
-            <UserCard name={user}/>
-        ))}    
-        </div>
-        
+            <div>
+  {Array.isArray(users) && users.length > 0 ? (
+    users.map((user, i) => (
+      <div key={i}><UserCard user={user} /></div>
+    ))
+  ) : (
+    <div>No users found</div>
+  )}
+</div>
     </div>
 }

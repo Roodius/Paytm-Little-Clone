@@ -7,9 +7,8 @@ export function UserCard({user}){
             <img
       className="w-8 h-8 rounded-full object-cover object-center"
       src="src/assets/profile.jpg"
-      alt="nature image"/><span className="text-lg">{user}</span>
+      alt="nature image"/><p className="text-lg">{user.firstName}</p>
          </div>
         <Link className="text-white bg-purple-500 p-2 rounded-xl" to={"/sendmoney"}>Send Money</Link>
-        
     </div>
 }

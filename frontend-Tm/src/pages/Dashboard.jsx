@@ -1,6 +1,7 @@
 import { Appbar } from "../components/Appbar";
 import { Balance } from "../components/Balance";
 import { Users } from "../components/Users";
+import {ErrorBoundary} from "react-error-boundary" 
 
 export  function Dashboard(){
 
@@ -8,7 +9,7 @@ export  function Dashboard(){
         <Appbar/>
         <div className="m-8">
             <Balance balance={"8,900"}/>
-            <Users/>
+            <ErrorBoundary fallback={<p>Something went wrong</p>}><Users/></ErrorBoundary>
         </div>
     </div>
 }

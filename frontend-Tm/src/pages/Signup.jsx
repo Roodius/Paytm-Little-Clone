@@ -43,7 +43,7 @@ export const Signup = () => {
                         password
                     })
                     localStorage.setItem("token",res.data.token)
-                    localStorage.removeItem("token") 
+                    // localStorage.removeItem("token") 
                     if(res) {setLabel("Signup Completed")}
                 }} label={label}/>
             </div>
