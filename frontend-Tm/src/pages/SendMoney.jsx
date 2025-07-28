@@ -1,5 +1,7 @@
 
+
 export function SendMoney(){
+    
 
     return <div className="">   
         <div className="h-screen justify-center items-center flex flex-col  gap-20">

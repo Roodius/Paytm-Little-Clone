@@ -6,7 +6,7 @@ require("dotenv").config();
 function usermiddleware(req,res,next){
     const Authen = req.headers.authorization;
 
-        if(!Authen &&  !Authen.startsWith("Bearer ")){
+        if(!Authen ||  !Authen.startsWith("Bearer ")){
         res.status(201).json({"Error" :"Plaese Enter Your Token"})
     }
 
@@ -22,4 +22,4 @@ function usermiddleware(req,res,next){
     }
 }
 
-module.exports = usermiddleware
+module.exports = usermiddleware;
