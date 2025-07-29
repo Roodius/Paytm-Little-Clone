@@ -5,7 +5,7 @@ import { Heading } from "../components/Heading"
 import { InputBox } from "../components/InputBox"
 import { SubHeading } from "../components/SubHeading"
 import axios from "axios"
-
+import { useNavigate } from "react-router-dom"
 
 export const Signup = () => {
     const [firstName ,setFirstName] = useState("");
@@ -13,7 +13,7 @@ export const Signup = () => {
     const [password ,setPassword] = useState("");
     const [username, setUsername] = useState("");
     const [label, setLabel] = useState("Sign up");
-
+    const navigate  = useNavigate();
     return <div className="bg-slate-300 h-screen flex justify-center items-center">
         <div className="bg-white w-[30%] h-[90%] rounded-lg ">
             <div className="justify-center flex">
@@ -42,9 +42,9 @@ export const Signup = () => {
                         lastName,
                         password
                     })
-                    localStorage.setItem("token",res.data.token)
-                    // localStorage.removeItem("token") 
+                    localStorage.setItem("token",res.data.token) 
                     if(res) {setLabel("Signup Completed")}
+                    navigate("/dashboard")
                 }} label={label}/>
             </div>
                 <BottomWarning label={"Alerady have an account ?"} LinkText={"Sing in"} to={"/signin"}/>
